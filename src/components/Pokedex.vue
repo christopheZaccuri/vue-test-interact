@@ -1,34 +1,20 @@
-<template>
-</template>
-
 <script>
 
 export default {
-    data() {
-        return {
-            pokemons: [],
-            pokemonDetails: []
-        }
-    },
-    methods: {
-        async fetchPokemon() {
-            const res = await fetch('https://pokeapi.co/api/v2/pokemon/');
-            const data = await res.json();
-            this.pokemons = data.results;
-            
-        },
-        async fetchPokemonsDetails() {
-            await this.fetchPokemon();
-            this.pokemons.forEach(async pokemon => {
-                const resDetails = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
-                const dataDetails = await resDetails.json();
-                this.pokemonDetails.push(dataDetails)
-            });
-        }
-    },
-    created() {
-        this.fetchPokemonsDetails();
+    props: {
+      pokemon: Object
     }
 }
 </script>
 
+<template>
+    <ul>
+        <li><img :src=pokemon.sprites.back_default></li>
+        <li class="name">{{pokemon.name}}</li>
+    </ul>
+</template>
+<style scoped>
+    li {
+        list-style-type: none;
+    }
+</style>
