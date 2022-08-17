@@ -1,45 +1,42 @@
 <script>
-import Pokedex from '@/components/Pokedex.vue'
-export default {
-    data() {
+    import Pokedex from "@/components/Pokedex.vue";
+    export default {
+      
+      data() {
         return {
-            pokemons: [],
-            pokemonsDetails: []
+          pokemonData : []
         }
-    },
-    components: {
-      'pokedex': Pokedex
-    },
-    methods: {
-        async fetchPokemon() {
-            const res = await fetch('https://pokeapi.co/api/v2/pokemon/');
-            const data = await res.json();
-            this.pokemons = data.results;
-            
-        },
-        async fetchPokemonsDetails() {
-            await this.fetchPokemon();
-            this.pokemons.forEach(async pokemon => {
-                const resDetails = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
-                const dataDetails = await resDetails.json();
-                this.pokemonsDetails.push(dataDetails)
-            });
+      },
+      components: {
+        'pokedex': Pokedex
+      },
+      methods: {
+        async getPokemonData() {
+          const fetchPokemon = await fetch('https://pokeapi.co/api/v2/pokemon/')
+          const fetchPokemonJson = await fetchPokemon.json()
+          fetchPokemonJson.results.forEach(async ({name}) => {
+            const fetchDetailsPokemon = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
+            const fetchDetailsPokemonJson = await fetchDetailsPokemon.json()
+            this.pokemonData.push(fetchDetailsPokemonJson);
+          });
         }
-    },
-    created() {
-        this.fetchPokemonsDetails();
+      },
+      created() {
+        this.getPokemonData()
+      },
+      
     }
-}
 </script>
 
 <template>
-  <main>
-    <pokedex v-for="pokemonDetails in pokemonsDetails" :pokemon="pokemonDetails" :key="pokemonDetails.id" />
-  </main>
+<div class="pokelist">
+  <pokedex v-for="pokemonDetail in pokemonData" :pokemonProp="pokemonDetail" :key="pokemonDetail" />
+</div>
+  
 </template>
 
-<style scoped>
-  main {
+<style>
+  .pokelist {
     display: flex;
     flex-wrap: wrap;
   }
