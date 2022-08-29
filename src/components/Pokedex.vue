@@ -1,18 +1,21 @@
 <script>
+import { mapGetters, mapState } from 'vuex'
 
 export default {
-    props: {
-      pokemonProp: Object
+    computed: {
+        ...mapGetters(['getPokemons']),
+        ...mapState(['pokemonArray'])
     }
+    
 }
 </script>
 
 <template>
-        <ul>
-            <li class="name"><h2>{{pokemonProp.name}}</h2></li>
-            <li class="image"><img :src=pokemonProp.sprites.front_default /></li>
-            
-        </ul>    
+    <div>
+        <ul v-for="pokemon in pokemonArray" :key="pokemon.id">
+            <li>{{pokemon.name}}</li>
+        </ul>
+    </div>
 </template>
 <style scoped>
     ul {
