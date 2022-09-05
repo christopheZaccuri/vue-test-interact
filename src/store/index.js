@@ -1,37 +1,40 @@
 import { createStore } from 'vuex'
+import axios from 'axios'
 
 export default createStore({
   state: {
-    urlApi: 'https://pokeapi.co/api/v2/pokemon/',
-	pokemonArray: []
+	pokemonNameArray: [],
+	pokemonDetailsArray: [],
+	pokemonLink: [],
+	nextUrl:''
   },
   getters: {
-	getPokemons(state) {
-		fetch(state.urlApi)
-		.then(response => {
-			if(response.ok) {
-				return response.json()
-			}
-		})
-		.then(responseJson => {
-			responseJson.results.forEach(element => {
-				fetch(state.urlApi+element.name)
-				.then(response => {
-					if(response.ok) {
-						return response.json()
-					}
-				})
-				.then(pokemonList => {
-					state.pokemonArray.push(pokemonList)
-				})
-			});
-		})
-	}
-    
+	
   },
   mutations: {
+	GET_NEXTURL(state, response) {
+		state.nextUrl = response
+	},
+	GET_POKEMONS(state, response) {
+		response.forEach(pokemon => {
+			state.pokemonNameArray.push(pokemon)
+		});
+	}
   },
   actions: {
+	fetchPokemonNames({commit}) {
+		return new Promise((resolve)=> {
+			axios.get('https://pokeapi.co/api/v2/pokemon/') 
+			.then(response => {
+				commit('GET_NEXTURL',response.data.next)
+				commit('GET_POKEMONS', response.data.results)
+				resolve()
+			})
+		}).then(()=> {
+			console.log('fetched')
+		})
+		
+	},
   },
   modules: {
   }

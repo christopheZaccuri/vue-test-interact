@@ -1,10 +1,16 @@
 <script>
-import { mapGetters, mapState } from 'vuex'
-
+import PokemonListVue from './PokemonList.vue';
 export default {
-    computed: {
-        ...mapGetters(['getPokemons']),
-        ...mapState(['pokemonArray'])
+    components: {
+        PokemonListVue
+    },
+    data() {
+        return {
+
+        }
+    },
+    methods: {
+
     }
     
 }
@@ -12,12 +18,18 @@ export default {
 
 <template>
     <div>
-        <ul v-for="pokemon in pokemonArray" :key="pokemon.id">
-            <li>{{pokemon.name}}</li>
-        </ul>
+        <input type="text" class="searchPokemon">
+        <div class="pokemon-list">
+        <PokemonListVue />
     </div>
+    </div>
+    
 </template>
 <style scoped>
+    .pokemon-list {
+        display: flex;
+        flex-wrap: wrap;
+    }
     ul {
         background: #eee;
         padding: 20px;
