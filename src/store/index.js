@@ -24,7 +24,7 @@ export default createStore({
   actions: {
 	fetchPokemonNames({commit}) {
 		return new Promise((resolve)=> {
-			axios.get('https://pokeapi.co/api/v2/pokemon/') 
+			axios.get('https://pokeapi.co/api/v2/pokemon?limit=-1') 
 			.then(response => {
 				commit('GET_NEXTURL',response.data.next)
 				commit('GET_POKEMONS', response.data.results)
