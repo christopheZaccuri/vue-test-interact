@@ -18,7 +18,8 @@ import axios from 'axios'
 export default {
     data() {
         return {
-            filteredPokemon: []
+            filteredPokemon: [],
+            indexToLoad: 20
         }
     },
     computed: {
@@ -26,21 +27,36 @@ export default {
         ...mapState(['pokemonNameArray', 'pokemonDetailsArray']),
     },
     created() {
-        this.fetchPokemonNames.then(()=>{
-            for (let index = 0; index < 20; index++) {
-                this.getPokemons(this.pokemonNameArray[index].name)
-                
+        this.init()
+        
+    },
+    mounted() {
+        window.onscroll = ()=> {
+            if(document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight){
+                if(document.querySelector('.searchPokemon').value === '') {
+                    for (let index = this.indexToLoad; index < this.indexToLoad+20; index++) {
+                        this.getPokemons(this.pokemonNameArray[index].name)
+                    }
+                    this.indexToLoad = this.indexToLoad+20
+                }
             }
-        })
-
+        }
     },
-    updated() {
-
-    },
-
     methods: {
+        init() {
+            this.fetchPokemonNames.then(()=>{
+                for (let index = 0; index < this.indexToLoad; index++) {
+                    this.getPokemons(this.pokemonNameArray[index].name)
+                }
+            })
+        },
         getPokemons(pokemonName) {
-            this.pokemonDetailsArray.length=0
+            console.log(this.filteredPokemon)
+            if(this.filteredPokemon.length > 0) {
+
+                this.pokemonDetailsArray.length=0
+            }
+            
             return new Promise((resolve, reject) => {
                 if(pokemonName !== ''){
                     resolve()
@@ -60,17 +76,22 @@ export default {
             })
         },
         searchPokemon(e) {
-            this.filteredPokemon = this.pokemonNameArray.filter(function(value){
-                if(value.name.includes(e.target.value)){
-                    return value
-                }
-            })
-            
-            for (let i = 0; i < 10; i++) {
-                if(this.filteredPokemon[i]) {
-                    this.getPokemons(this.filteredPokemon[i].name);
+            if(e.target.value !== '') {
+                this.filteredPokemon = this.pokemonNameArray.filter(function(value){
+                    if(value.name.includes(e.target.value, 0)){
+                        return value
+                    }
+                })
+
+                for (let i = 0; i < 10; i++) {
+                    if(this.filteredPokemon[i]) {
+                        this.getPokemons(this.filteredPokemon[i].name);
+                    } 
                 } 
-            } 
+            } else {
+                this.filteredPokemon.length = 0
+                this.init()
+            }
         }
     }
 }
