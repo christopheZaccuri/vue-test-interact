@@ -1,5 +1,5 @@
 <script>
-    import Pokedex from "@/components/Pokedex.vue";
+    import PokemonList from "@/components/PokemonList.vue";
     export default {
       
       data() {
@@ -7,7 +7,7 @@
         }
       },
       components: {
-        'pokedex': Pokedex
+        'pokemon-list': PokemonList
       },
       methods: {
        
@@ -20,7 +20,7 @@
 
 <template>
 <div class="pokelist">
-  <pokedex />
+  <pokemon-list />
 </div>
   
 </template>

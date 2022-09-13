@@ -8,6 +8,14 @@
             <li>
                 <img :src="pokemon.sprites.front_default" :alt="pokemon.name">
             </li>
+            <li><router-link 
+            :to="{
+                name:'pokemon-details', 
+                params:{ 
+                    pokemonname: pokemon.name,
+                    pokemonAll: JSON.stringify(pokemon)
+                    }
+            }">more details</router-link>   </li>
         </ul>
     </div>
 </template>
@@ -15,6 +23,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import axios from 'axios'
+import router from '@/router'
 export default {
     data() {
         return {
@@ -25,10 +34,11 @@ export default {
     computed: {
         ...mapActions(['fetchPokemonNames']),
         ...mapState(['pokemonNameArray', 'pokemonDetailsArray']),
+        
+        
     },
     created() {
         this.init()
-        
     },
     mounted() {
         window.onscroll = ()=> {
@@ -39,19 +49,12 @@ export default {
                     }
                     this.indexToLoad = this.indexToLoad+20
                 }
+                
             }
         }
     },
     methods: {
-        init() {
-            this.fetchPokemonNames.then(()=>{
-                for (let index = 0; index < this.indexToLoad; index++) {
-                    this.getPokemons(this.pokemonNameArray[index].name)
-                }
-            })
-        },
         getPokemons(pokemonName) {
-            console.log(this.filteredPokemon)
             if(this.filteredPokemon.length > 0) {
 
                 this.pokemonDetailsArray.length=0
@@ -78,11 +81,10 @@ export default {
         searchPokemon(e) {
             if(e.target.value !== '') {
                 this.filteredPokemon = this.pokemonNameArray.filter(function(value){
-                    if(value.name.includes(e.target.value, 0)){
+                    if(value.name.startsWith(e.target.value)){
                         return value
                     }
                 })
-
                 for (let i = 0; i < 10; i++) {
                     if(this.filteredPokemon[i]) {
                         this.getPokemons(this.filteredPokemon[i].name);
@@ -90,8 +92,16 @@ export default {
                 } 
             } else {
                 this.filteredPokemon.length = 0
+                this.pokemonDetailsArray.length=0
                 this.init()
             }
+        },
+        init() {
+            this.fetchPokemonNames.then(()=>{
+                for (let index = 0; index < this.indexToLoad; index++) {
+                    this.getPokemons(this.pokemonNameArray[index].name)
+                }
+            })
         }
     }
 }
