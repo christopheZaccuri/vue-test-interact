@@ -28,7 +28,8 @@ export default {
     data() {
         return {
             filteredPokemon: [],
-            indexToLoad: 20
+            indexToLoad: 20,
+            tabFilter: []
         }
     },
     computed: {
@@ -44,32 +45,38 @@ export default {
         window.onscroll = ()=> {
             if(document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight){
                 if(document.querySelector('.searchPokemon').value === '') {
-                    for (let index = this.indexToLoad; index < this.indexToLoad+20; index++) {
-                        this.getPokemons(this.pokemonNameArray[index].name)
-                    }
                     this.indexToLoad = this.indexToLoad+20
+                    this.getPokemons(this.pokemonNameArray.slice(this.indexToLoad, this.indexToLoad+20))
                 }
-                
             }
         }
     },
     methods: {
-        getPokemons(pokemonName) {
+        getPokemons(pokemonArray) {
             if(this.filteredPokemon.length > 0) {
 
                 this.pokemonDetailsArray.length=0
             }
             
             return new Promise((resolve, reject) => {
-                if(pokemonName !== ''){
+                if(pokemonArray.length>0){
                     resolve()
                 } else {
                     reject('no value')
                 }
             }).then(()=> {
-                axios.get('https://pokeapi.co/api/v2/pokemon/'+pokemonName) 
+                if(pokemonArray.length > 20) {
+                    this.tabFilter = pokemonArray.slice(0, this.indexToLoad )
+                } else {
+                    this.tabFilter = pokemonArray
+                }
+                axios.all(
+                    this.tabFilter.map(value => axios.get('https://pokeapi.co/api/v2/pokemon/'+value.name))
+                )
                 .then(response => {
-                    this.pokemonDetailsArray.push(response.data)
+                    response.forEach(element => {
+                        this.pokemonDetailsArray.push(element.data)
+                    });
                 })
                 .catch((err)=> {
                     console.log('pokemon non reconnu '+err)
@@ -98,9 +105,7 @@ export default {
         },
         init() {
             this.fetchPokemonNames.then(()=>{
-                for (let index = 0; index < this.indexToLoad; index++) {
-                    this.getPokemons(this.pokemonNameArray[index].name)
-                }
+                this.getPokemons(this.pokemonNameArray)
             })
         }
     }
