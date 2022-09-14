@@ -1,6 +1,7 @@
 <template>
     <input @input="searchPokemon" type="text" class="searchPokemon" />
     <div class="pokemon-list">
+        <div class="loading" v-if="loading"><img src="@/assets/loader.gif" alt=""></div>
         <ul v-for="pokemon in pokemonDetailsArray" :key="pokemon.id">
             <li>
                 <h2>{{pokemon.name}}</h2>
@@ -29,14 +30,14 @@ export default {
         return {
             filteredPokemon: [],
             indexToLoad: 20,
-            tabFilter: []
+            tabFilter: [],
+            loading : false
         }
     },
     computed: {
         ...mapActions(['fetchPokemonNames']),
         ...mapState(['pokemonNameArray', 'pokemonDetailsArray']),
-        
-        
+  
     },
     created() {
         this.init()
@@ -60,6 +61,7 @@ export default {
             
             return new Promise((resolve, reject) => {
                 if(pokemonArray.length>0){
+                    this.loading = true
                     resolve()
                 } else {
                     reject('no value')
@@ -74,6 +76,7 @@ export default {
                     this.tabFilter.map(value => axios.get('https://pokeapi.co/api/v2/pokemon/'+value.name))
                 )
                 .then(response => {
+                    this.loading = false
                     response.forEach(element => {
                         this.pokemonDetailsArray.push(element.data)
                     });
@@ -92,11 +95,8 @@ export default {
                         return value
                     }
                 })
-                for (let i = 0; i < 10; i++) {
-                    if(this.filteredPokemon[i]) {
-                        this.getPokemons(this.filteredPokemon[i].name);
-                    } 
-                } 
+                this.getPokemons(this.filteredPokemon);
+
             } else {
                 this.filteredPokemon.length = 0
                 this.pokemonDetailsArray.length=0
@@ -104,6 +104,7 @@ export default {
             }
         },
         init() {
+            this.pokemonDetailsArray.length=0
             this.fetchPokemonNames.then(()=>{
                 this.getPokemons(this.pokemonNameArray)
             })
@@ -125,5 +126,21 @@ export default {
         padding: 20px;
         border-radius: 20px;
         margin: 10px;
+    }
+    .loading {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.2);
+        color: #fff;
+        z-index: 2;
+    }
+    .loading img {
+        position: absolute;
+        top: 50%;
+        left: 35%;
+        width: 20%;
     }
 </style>
