@@ -4,7 +4,7 @@
         <div class="teamList__pokemon" v-for="pokemon in team" :key="pokemon.id">
             <p><img :src="pokemon.sprites.front_default" alt=""></p>
             <p>{{pokemon.name}}</p>     
-            <p @click="removePokemonFromTeam(pokemon)">Remove</p> 
+            <a href="#" @click.prevent="removePokemonFromTeam(pokemon)">Remove</a> 
         </div>
     </div>
 </template>

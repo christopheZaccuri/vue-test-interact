@@ -20,7 +20,7 @@
                     pokemonAll: JSON.stringify(pokemon)
                     }
             }">more details</router-link>   </li>
-            <li><input @click="pushPokemonIntoTeam(pokemon)" type="button" value="add to team"></li>
+            <li><input @click.prevent="pushPokemonIntoTeam(pokemon)" type="button" value="add to team"></li>
         </ul>
     </div>
     
