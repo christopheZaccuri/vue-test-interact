@@ -1,4 +1,7 @@
 <template>
+    <div class="team">
+        <poketeam />
+    </div>
     <input @input="searchPokemon" type="text" class="searchPokemon" />
     <div class="pokemon-list">
         <div class="loading" v-if="loading"><img src="@/assets/loader.gif" alt=""></div>
@@ -17,14 +20,17 @@
                     pokemonAll: JSON.stringify(pokemon)
                     }
             }">more details</router-link>   </li>
+            <li><input @click="pushPokemonIntoTeam(pokemon)" type="button" value="add to team"></li>
         </ul>
     </div>
+    
+    
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
 import axios from 'axios'
-import router from '@/router'
+import pokeTeam from '@/components/PokeTeam.vue'
 export default {
     data() {
         return {
@@ -34,10 +40,13 @@ export default {
             loading : false
         }
     },
+    components: {
+        'poketeam': pokeTeam
+    },
     computed: {
+        
+        ...mapState(['pokemonNameArray', 'pokemonDetailsArray', 'team']),
         ...mapActions(['fetchPokemonNames']),
-        ...mapState(['pokemonNameArray', 'pokemonDetailsArray']),
-  
     },
     created() {
         this.init()
@@ -53,6 +62,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions(['pushPokemonIntoTeam']),
         getPokemons(pokemonArray) {
             if(this.filteredPokemon.length > 0) {
 
@@ -103,6 +113,7 @@ export default {
                 this.init()
             }
         },
+
         init() {
             this.pokemonDetailsArray.length=0
             this.fetchPokemonNames.then(()=>{
@@ -142,5 +153,12 @@ export default {
         top: 50%;
         left: 35%;
         width: 20%;
+    }
+    .team {
+        background: #eee;
+        top: 0;
+        right: 0;
+        width: 100%;
+        padding: 20px;
     }
 </style>

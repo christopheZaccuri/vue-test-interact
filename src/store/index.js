@@ -6,6 +6,7 @@ export default createStore({
 	pokemonNameArray: [],
 	pokemonDetailsArray: [],
 	pokemonLink: [],
+	team: []
   },
   getters: {
 	
@@ -15,6 +16,15 @@ export default createStore({
 		response.forEach(pokemon => {
 			state.pokemonNameArray.push(pokemon)
 		});
+	},
+	PUSH_TEAM_POKEMON(state, data){
+		state.team.push(data)
+	},
+	REMOVE_TEAM_POKEMON(state, data){
+		const filter = state.team.filter(value=> {
+			return value !== data
+		})
+		state.team = [...filter]
 	}
   },
   actions: {
@@ -30,6 +40,13 @@ export default createStore({
 		})
 		
 	},
+	pushPokemonIntoTeam({commit}, pokemon){
+		commit('PUSH_TEAM_POKEMON', pokemon)
+	},
+	removePokemonFromTeam({commit}, pokemon){
+		commit('REMOVE_TEAM_POKEMON', pokemon)
+	}
+
   },
   modules: {
   }
